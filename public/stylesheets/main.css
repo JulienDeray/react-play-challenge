@@ -1,0 +1,14 @@
+/* Split page */
+
+.split-left {
+    height: 100%;
+    overflow: auto;
+    float: left;
+    width: 50%;
+}
+
+.split-right {
+    float: right;
+    width: 50%;
+    height: 100%;
+}
