@@ -3,7 +3,7 @@ package controllers
 import javax.inject._
 
 import articles.Articles
-import articles.Articles.articleFormatter
+import articles.Articles.{articleFormatter, newArticleForm}
 import play.api.libs.json.Json
 import play.api.mvc._
 
@@ -16,6 +16,16 @@ class ArticlesController @Inject() extends Controller {
 
   def getArticles = Action {
     Ok(Json.toJson(Articles.getArticles))
+  }
+
+  def newArticle = Action { implicit request =>
+    newArticleForm.bindFromRequest.fold(
+      _ => BadRequest,
+      article => {
+        Articles.addArticle(article)
+        Ok("")
+      }
+    )
   }
 }
 

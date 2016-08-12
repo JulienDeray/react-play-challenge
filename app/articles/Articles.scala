@@ -1,6 +1,8 @@
 package articles
 
 import play.api.libs.json.Json
+import play.api.data.Form
+import play.api.data.Forms._
 
 /**
   * @author : julienderay
@@ -32,6 +34,14 @@ object Articles {
   def addArticle(article: Article): Unit = {
     articles = articles :+ article
   }
+
+  def newArticleForm = Form(
+    mapping(
+      "title" -> nonEmptyText,
+      "author" -> nonEmptyText,
+      "content" -> nonEmptyText
+    )(Article.apply)(Article.unapply)
+  )
 }
 
 case class Article(title: String, author: String, content: String)
