@@ -16,6 +16,9 @@ const ArticlesList = React.createClass({
         return { articles: [] };
     },
     componentDidMount() {
+        this.getArticlesFromBackend()
+    },
+    getArticlesFromBackend() {
         $.ajax({
             url: this.props.url,
             dataType: 'json',
@@ -33,6 +36,7 @@ const ArticlesList = React.createClass({
             this.state.articles.length
                 ? this.state.articles.map(article =>
                     <Article
+                        key={article.title}
                         title={article.title}
                         author={article.author}
                         content={article.content} />
