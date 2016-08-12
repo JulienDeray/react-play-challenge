@@ -4,11 +4,11 @@
     height: 100%;
     overflow: auto;
     float: left;
-    width: 50%;
+    width: 70%;
 }
 
 .split-right {
     float: right;
-    width: 50%;
+    width: 30%;
     height: 100%;
 }
