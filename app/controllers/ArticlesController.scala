@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject._
 
-import articles.Articles
+import articles.{Article, Articles}
 import articles.Articles.{articleFormatter, newArticleForm}
 import play.api.libs.json.Json
 import play.api.mvc._
@@ -14,8 +14,17 @@ class ArticlesController @Inject() extends Controller {
     Ok(views.html.index())
   }
 
-  def getArticles = Action {
-    Ok(Json.toJson(Articles.getArticles))
+  def getArticles = Action { implicit request =>
+    val optAuthor = request.getQueryString("author")
+    val optContent = request.getQueryString("content")
+    val optTitle = request.getQueryString("title")
+
+    val filteredArticles = Articles.getArticles
+      .filter( article => optAuthor.fold(true)(author => author == article.author))
+      .filter( article => optContent.fold(true)(content => content == article.author))
+      .filter( article => optTitle.fold(true)(title => title == article.author))
+
+    Ok(Json.toJson(filteredArticles))
   }
 
   def newArticle = Action { implicit request =>

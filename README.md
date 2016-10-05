@@ -22,7 +22,7 @@ When a new article is published, `TopLevelBox` sends the data to the server (`PO
 ## The exercise
 
 1) If our application is successful, the number of articles will be too huge so that the user will probably want to filter them. 
-It is your turn to figure out a way to filter the articles, by title, author, ... whatever is relevant for you! 
+It is your turn to figure out a way to filter the articles, by title first. You can add my features if you think it could improve the efficiency or the UX, be creative! 
 
 2) Improve whatever you want, any good idea can improve the user's experience ;)
 
