@@ -1,7 +1,6 @@
-
 const NewArticleForm = React.createClass({
     getInitialState() {
-        return { title: '', author: '', content: '' };
+        return { title: '', author: '', content: '' ,date:''};
     },
     handleTitleChange(event) {
         this.setState({ title: event.target.value });
@@ -12,67 +11,187 @@ const NewArticleForm = React.createClass({
     handleContentChange(event) {
         this.setState({ content: event.target.value });
     },
+    handleDateChange(event) {
+        this.setState({ date: event.target.value });
+    },
     postNewArticle() {
         this.props.postNewArticle(
             this.state,
             () => this.setState( this.getInitialState() )
-        )
+    )
     },
     render() {
         return (
-           <div>
-               <p>Title : <input type='text' value={this.state.title} onChange={this.handleTitleChange} /></p>
-               <p>Author : <input type='text' value={this.state.author} onChange={this.handleAuthorChange} /></p>
-               <p>Content : <textarea value={this.state.content} onChange={this.handleContentChange} /></p>
-               <button onClick={this.postNewArticle}>Publish</button>
-           </div>
-        );
+
+            <div>
+            <table>
+                <tr>
+                    <td>Title :</td>
+                    <td><input type='text' value={this.state.title} onChange={this.handleTitleChange}/></td>
+                </tr>
+
+                <tr>
+                    <td>Author :</td>
+                    <td><input type='text' value={this.state.author} onChange={this.handleAuthorChange} /></td>
+                </tr>
+
+                <tr>
+                    <td>Content :</td>
+                    <td><textarea value={this.state.content} onChange={this.handleContentChange} /></td>
+                </tr>
+                <tr>
+                    <td>Date: </td>
+                    <td><input type="date" value={this.state.date} onChange={this.handleDateChange} /></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button onClick={this.postNewArticle}>Publish</button></td>
+                </tr>
+            </table>
+
+        </div>
+    );
     }
 });
 
 const Article = React.createClass({
     render() {
         return (
-           <div>
-               <h3>{this.props.title}</h3>
-               <p>Author: {this.props.author}</p>
-               <p>{this.props.content}</p>
-           </div>
-        );
+            <div>
+            <h3>{this.props.title}</h3>
+        <p>Author: {this.props.author} , Date: {this.props.date}</p>
+        <p>{this.props.content}</p>
+        </div>
+    );
     }
 });
 
 const ArticlesList = React.createClass({
     render() {
-        const list =
-            this.props.articles.length
-                ? this.props.articles.map(article =>
-                    <Article
-                        key={article.title}
-                        title={article.title}
-                        author={article.author}
-                        content={article.content} />
-                )
-                : <h2>No articles</h2>;
+        const order = this.props.order;
 
+        let arr = this.props.articles;
+
+
+        if(order=='title'){
+
+            arr.sort(function (a, b) {
+                if (a.title > b.title) {
+                    return 1;
+                }
+                if (a.title < b.title) {
+                    return -1;
+                }
+
+                return 0;
+            });
+
+            arr = arr.length
+                ? arr.map(article =>
+                <Article
+                key={article.title}
+            title={article.title}
+            author={article.author}
+            date={article.date}
+            content={article.content}
+
+        />
+        )
+        : <h2>No articles</h2>;
+
+
+
+        }
+        else if (order=='newest') {
+            arr.sort(function (a, b) {
+                if (a.date > b.date) {
+                    return -1;
+                }
+                if (a.date < b.date) {
+                    return 1;
+                }
+
+                return 0;
+            });
+
+            arr = arr.length
+                ? arr.map(article =>
+                <Article
+                key={article.title}
+            title={article.title}
+            author={article.author}
+            date={article.date}
+            content={article.content}
+
+        />
+        )
+        : <h2>No articles</h2>;
+        }
+        else if(order=='oldest'){
+            arr.sort(function (a, b) {
+                if (a.date > b.date) {
+                    return 1;
+                }
+                if (a.date < b.date) {
+                    return -1;
+                }
+
+                return 0;
+            });
+
+            arr = arr.length
+                ? arr.map(article =>
+                <Article
+                key={article.title}
+            title={article.title}
+            author={article.author}
+            date={article.date}
+            content={article.content}
+
+        />
+        )
+        : <h2>No articles</h2>;
+        }
         return (
             <div>
-                { list }
+            { arr }
             </div>
-        );
+    );
     }
 });
 
 const ArticlesBox = React.createClass({
+    getInitialState:function(){
+        return {selectValue:'title'};
+    },
+    handleChange:function(e){
+        this.setState({selectValue:e.target.value});
+    },
+
     render() {
         return (
             <div className='split-left'>
-                <h1>Articles :</h1>
-                <ArticlesList articles={this.props.articles} />
-                <hr />
-                <h4>Articles are sponsored by <a href='http://slipsum.com'>SAMUEL L. IPSUM</a></h4>
+                <div className="top-banner">
+                    <div className="top-banner-left">
+                        <h1>Articles :</h1>
+                    </div>
+                    <div className="top-banner-right">
+                    <label>
+                    Order By:
+                    <select id="order" value={this.state.selectValue} onChange={this.handleChange}>
+                        <option value="title">Title</option>
+                        <option value="newest">Newest</option>
+                        <option value="oldest">Oldest</option>
+                    </select>
+                    </label>
+                    </div>
             </div>
-        );
+            <ArticlesList articles={this.props.articles} order={this.state.selectValue}/>
+
+    <hr />
+        <h4>Articles are sponsored by <a href='http://slipsum.com'>SAMUEL L. IPSUM</a></h4>
+        </div>
+    );
     }
 });
 
@@ -80,14 +199,15 @@ const NewArticleBox = React.createClass({
     render() {
         return (
             <div className='split-right'>
-                <h1>New article :</h1>
-                <NewArticleForm postNewArticle={this.props.postNewArticle} />
-            </div>
-        );
+            <h1>New article :</h1>
+        <NewArticleForm postNewArticle={this.props.postNewArticle} />
+    </div>
+    );
     }
 });
 
 const TopLevelBox = React.createClass({
+
     componentDidMount() {
         this.getArticlesFromBackend()
     },
@@ -127,16 +247,22 @@ const TopLevelBox = React.createClass({
         const height = $(window).height();
         const width = $(window).width();
 
+
         return (
-           <div style={{ height, width }}>
-               <ArticlesBox articles={this.state.articles} />
-               <NewArticleBox postNewArticle={this.postNewArticle} />
-           </div>
+            <div style={{ height, width }}>
+
+                    <ArticlesBox articles={this.state.articles} />
+                    <NewArticleBox postNewArticle={this.postNewArticle} />
+
+
+            </div>
         );
     }
 });
 
+
+
 ReactDOM.render(
-    <TopLevelBox />,
+<TopLevelBox />,
     document.getElementById('content')
 );
