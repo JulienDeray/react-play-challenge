@@ -5,8 +5,8 @@ import play.api.data.Form
 import play.api.data.Forms._
 
 /**
-  * @author : julienderay
   * Created on 12/08/2016
+  * @author : julienderay
   */
 
 object Articles {
@@ -54,3 +54,4 @@ object Articles {
 }
 
 case class Article(title: String, author: String, date: String, content: String)
+

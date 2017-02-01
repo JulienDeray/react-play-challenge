@@ -2,18 +2,29 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        @* Here's where we render the page title `String`. *@
-        <title>@title</title>
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+  <head>
+    @* Here's where we render the page title `String`. *@
+    <title>@title</title>
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
 
-        <script src="https://unpkg.com/react@@15.3.0/dist/react.js"></script>
-        <script src="https://unpkg.com/react-dom@@15.3.0/dist/react-dom.js"></script>
-        <script src="https://unpkg.com/babel-core@@5.8.38/browser.min.js"></script>
-        <script src="https://unpkg.com/jquery@@3.1.0/dist/jquery.min.js"></script>
-    </head>
-    <body>
-        @content
-    </body>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
+
+    <script src="@routes.Assets.at("javascripts/JSXTransformer.js")"></script>
+
+    <script src="@routes.Assets.at("javascripts/react-bootstrap.min.js")"></script>
+
+
+  </head>
+  <body>
+  @content
+
+
+
+  </body>
 </html>
