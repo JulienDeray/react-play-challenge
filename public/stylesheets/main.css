@@ -1,14 +1,8 @@
-/* Split page */
 
-.split-left {
-    height: 100%;
-    overflow: auto;
-    float: left;
-    width: 70%;
+.grid{
+    margin-top:80px;
 }
 
-.split-right {
-    float: right;
-    width: 30%;
-    height: 100%;
+.grid-content{
+    margin-top: 20px;
 }
