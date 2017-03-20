@@ -65,10 +65,11 @@ const ArticlesList = React.createClass({
 
 const ArticlesBox = React.createClass({
     render() {
+        var articles = this.props.articles.filter(article => article.title.toLowerCase().includes(this.props.articleFilter.toLowerCase().trim()));
         return (
             <div className='split-left'>
                 <h1>Articles :</h1>
-                <ArticlesList articles={this.props.articles} />
+                <ArticlesList articles={articles} />
                 <hr />
                 <h4>Articles are sponsored by <a href='http://slipsum.com'>SAMUEL L. IPSUM</a></h4>
             </div>
@@ -87,12 +88,25 @@ const NewArticleBox = React.createClass({
     }
 });
 
+const SearchBar = React.createClass({
+    render() {
+       return (
+           <div>
+               <p>Search articles : <input type='text' value={this.props.articleFilter} onChange={this.props.handleArticleFilterChange}/></p>
+           </div>
+       );
+    }
+});
+
 const TopLevelBox = React.createClass({
     componentDidMount() {
         this.getArticlesFromBackend()
     },
     getInitialState() {
-        return { articles: [] };
+        return {
+            articles: [],
+            articleFilter: ''
+        };
     },
     getArticlesFromBackend() {
         $.ajax({
@@ -123,13 +137,17 @@ const TopLevelBox = React.createClass({
             }.bind(this)
         });
     },
+    handleArticleFilterChange(event) {
+        this.setState({ articleFilter: event.target.value});
+    },
     render() {
         const height = $(window).height();
         const width = $(window).width();
 
         return (
            <div style={{ height, width }}>
-               <ArticlesBox articles={this.state.articles} />
+               <SearchBar articleFilter={this.state.articleFilter} handleArticleFilterChange={this.handleArticleFilterChange}/>
+               <ArticlesBox articles={this.state.articles} articleFilter={this.state.articleFilter} />
                <NewArticleBox postNewArticle={this.postNewArticle} />
            </div>
         );
