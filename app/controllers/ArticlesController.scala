@@ -16,11 +16,13 @@ class ArticlesController @Inject() extends Controller {
 
   def getArticles = Action { implicit request =>
     val optAuthor = request.getQueryString("author")
+    val optDate = request.getQueryString("date")
     val optContent = request.getQueryString("content")
     val optTitle = request.getQueryString("title")
 
     val filteredArticles = Articles.getArticles
       .filter( article => optAuthor.fold(true)(author => author == article.author))
+      .filter( article => optDate.fold(true)(date => date == article.date))
       .filter( article => optContent.fold(true)(content => content == article.author))
       .filter( article => optTitle.fold(true)(title => title == article.author))
 
