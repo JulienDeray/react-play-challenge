@@ -1,7 +1,32 @@
+let {Button, Navbar, Nav, NavItem, Glyphicon, Modal, InputGroup} = ReactBootstrap;
+
+const Header = React.createClass({
+    render() {
+        return (
+            <Navbar>
+                <Navbar.Header>
+                    <Navbar.Brand>
+                        <a href="#">Mobillity</a>
+                    </Navbar.Brand>
+                </Navbar.Header>
+                <Nav>
+                    <NavItem eventKey={1} href="http://www.mobillity.co/">Our website</NavItem>
+                    <NavItem eventKey={2} href="http://www.mobillity.co/our_story">Our story</NavItem>
+                </Nav>
+                <Nav pullRight>
+                    <NavItem eventKey={1}>
+                        <SearchBar articleFilter={this.articleFilter} handleArticleFilterChange={this.props.handleArticleFilterChange}/>
+                    </NavItem>
+                    <NavItem eventKey={2} onClick={this.props.openModal}>Write a story !</NavItem>
+                </Nav>
+            </Navbar>
+        );
+    }
+});
 
 const NewArticleForm = React.createClass({
     getInitialState() {
-        return { title: '', author: '', content: '' };
+        return { title: '', author: '', date: new Date().toISOString(), content: ''};
     },
     handleTitleChange(event) {
         this.setState({ title: event.target.value });
@@ -17,6 +42,7 @@ const NewArticleForm = React.createClass({
             this.state,
             () => this.setState( this.getInitialState() )
         )
+        this.props.closeModal();
     },
     render() {
         return (
@@ -35,7 +61,8 @@ const Article = React.createClass({
         return (
            <div>
                <h3>{this.props.title}</h3>
-               <p>Author: {this.props.author}</p>
+               <p><i>By {this.props.author}</i><br/>
+               {moment(this.props.date).fromNow()}</p>
                <p>{this.props.content}</p>
            </div>
         );
@@ -51,6 +78,7 @@ const ArticlesList = React.createClass({
                         key={article.title}
                         title={article.title}
                         author={article.author}
+                        date={article.date}
                         content={article.content} />
                 )
                 : <h2>No articles</h2>;
@@ -68,7 +96,7 @@ const ArticlesBox = React.createClass({
         var articles = this.props.articles.filter(article => article.title.toLowerCase().includes(this.props.articleFilter.toLowerCase().trim()));
         return (
             <div className='split-left'>
-                <h1>Articles :</h1>
+                <h1>Our last articles </h1>
                 <ArticlesList articles={articles} />
                 <hr />
                 <h4>Articles are sponsored by <a href='http://slipsum.com'>SAMUEL L. IPSUM</a></h4>
@@ -77,13 +105,17 @@ const ArticlesBox = React.createClass({
     }
 });
 
-const NewArticleBox = React.createClass({
+const ModalNewArticleBox = React.createClass({
     render() {
         return (
-            <div className='split-right'>
-                <h1>New article :</h1>
-                <NewArticleForm postNewArticle={this.props.postNewArticle} />
-            </div>
+            <Modal show={this.props.showModal} onHide={this.props.closeModal}>
+                <Modal.Header>
+                    <Modal.Title>Write a new story !</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <NewArticleForm postNewArticle={this.props.postNewArticle} closeModal={this.props.closeModal}/>
+                </Modal.Body>
+            </Modal>
         );
     }
 });
@@ -91,22 +123,30 @@ const NewArticleBox = React.createClass({
 const SearchBar = React.createClass({
     render() {
        return (
-           <div>
-               <p>Search articles : <input type='text' value={this.props.articleFilter} onChange={this.props.handleArticleFilterChange}/></p>
-           </div>
+           <InputGroup>
+               <Glyphicon glyph="search" />
+               <input placeholder='Search articles' type='text' value={this.props.articleFilter} onChange={this.props.handleArticleFilterChange}/>
+           </InputGroup>
        );
     }
 });
 
-const TopLevelBox = React.createClass({
-    componentDidMount() {
-        this.getArticlesFromBackend()
-    },
+const MainContainer = React.createClass({
     getInitialState() {
         return {
             articles: [],
-            articleFilter: ''
+            articleFilter: '',
         };
+    },
+    compareArticles(a1, a2){
+        if(a1.date > a2.date)
+            return -1;
+        if(a1.date < a2.date)
+            return 1;
+        return 0;
+    },
+    componentDidMount() {
+        this.getArticlesFromBackend()
     },
     getArticlesFromBackend() {
         $.ajax({
@@ -114,7 +154,7 @@ const TopLevelBox = React.createClass({
             dataType: 'json',
             type: 'GET',
             success: function(articles) {
-                this.setState({ articles });
+                this.setState({ articles: articles.sort(this.compareArticles) });
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(this.props.url, status, err.toString());
@@ -137,6 +177,29 @@ const TopLevelBox = React.createClass({
             }.bind(this)
         });
     },
+    render(){
+        return(
+            <div>
+                <ArticlesBox articles={this.state.articles} articleFilter={this.props.articleFilter} />
+                <ModalNewArticleBox showModal={this.props.showModal} closeModal={this.props.closeModal} postNewArticle={this.postNewArticle}/>
+            </div>
+        );
+    }
+});
+
+const TopLevelBox = React.createClass({
+    getInitialState() {
+        return {
+            articleFilter: "",
+            showModal: false
+        };
+    },
+    openModal(){
+        this.setState({showModal: true});
+    },
+    closeModal(){
+        this.setState({showModal: false});
+    },
     handleArticleFilterChange(event) {
         this.setState({ articleFilter: event.target.value});
     },
@@ -146,9 +209,8 @@ const TopLevelBox = React.createClass({
 
         return (
            <div style={{ height, width }}>
-               <SearchBar articleFilter={this.state.articleFilter} handleArticleFilterChange={this.handleArticleFilterChange}/>
-               <ArticlesBox articles={this.state.articles} articleFilter={this.state.articleFilter} />
-               <NewArticleBox postNewArticle={this.postNewArticle} />
+               <Header articleFilter={this.state.articleFilter} handleArticleFilterChange={this.handleArticleFilterChange} openModal={this.openModal}/>
+               <MainContainer showModal={this.state.showModal} closeModal={this.closeModal} articleFilter={this.state.articleFilter}/>
            </div>
         );
     }
