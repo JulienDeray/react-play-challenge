@@ -29,6 +29,7 @@ html {
 .rpc-app {
     display: table;
     height: 100%;
+    width: 100%;
 }
 
 
@@ -73,6 +74,26 @@ html {
 /* Article */
 .rpc-article {
     margin-bottom: 3rem;
+}
+
+
+/* Show only titles */
+.rpc-only-titles {
+    margin-top: 1rem;
+}
+
+.rpc-only-titles .rpc-article {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background: #fff;
+}
+
+.rpc-only-titles h3 {
+    margin: 0;
+}
+
+.rpc-only-titles p {
+    display: none;
 }
 
 

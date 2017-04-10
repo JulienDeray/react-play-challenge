@@ -47,6 +47,11 @@ const Article = React.createClass({
 });
 
 const ArticlesList = React.createClass({
+    getInitialState() {
+        // TODO: not finished
+        //return { classes: ['rpc-articles-list', 'rpc-only-titles'] };
+        return { classes: ['rpc-articles-list'] };
+    },
     render() {
         const list =
             this.props.articles.length
@@ -60,7 +65,7 @@ const ArticlesList = React.createClass({
                 : <h2>No articles</h2>;
 
         return (
-            <div className="rpc-articles-list">
+            <div className={this.state.classes.join(' ')}>
                 { list }
             </div>
         );
@@ -68,7 +73,7 @@ const ArticlesList = React.createClass({
 });
 
 /**
- * Filter articles by a simple title partial match checking. TODO: Also the filter can be cleared.
+ * Filter articles by a simple title partial match checking. Also the filter can be cleared.
  */
 const FilterByTitle = React.createClass({
     getInitialState() {
@@ -101,7 +106,7 @@ const FilterByTitle = React.createClass({
 });
 
 /**
- * TODO: Filter articles by simple title partial match checking. Also filter can be cleared.
+ * Filter articles by simple title partial match checking. Also filter can be cleared.
  */
 const ContentToggler = React.createClass({
     render() {
@@ -121,11 +126,14 @@ const ArticlesBox = React.createClass({
                 <h1>Articles</h1>
                 <div className="rpc-articles-settings">
                     <FilterByTitle articles={this.props.articles} filter={this.props.filter} clearFilter={this.props.clearFilter} />
-                    <ContentToggler toggleContent={this.props.toggleContent} />
+                    {/*
+                      TODO: not finished
+                      <ContentToggler toggleContent={this.props.toggleContent} />
+                    */}
                 </div>
-                <ArticlesList articles={this.props.articles} />
+                <ArticlesList articles={this.props.articles} articlesListClasses={"TODO"} />
                 <hr />
-                <h4>Articles are sponsored by <a href='http://slipsum.com'>SAMUEL L. IPSUM</a></h4>
+                <h4>Some articles are sponsored by <a href='http://slipsum.com'>SAMUEL L. IPSUM</a></h4>
             </div>
         );
     }
