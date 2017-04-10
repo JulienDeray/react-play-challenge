@@ -47,11 +47,6 @@ const Article = React.createClass({
 });
 
 const ArticlesList = React.createClass({
-    getInitialState() {
-        // TODO: not finished
-        //return { classes: ['rpc-articles-list', 'rpc-only-titles'] };
-        return { classes: ['rpc-articles-list'] };
-    },
     render() {
         const list =
             this.props.articles.length
@@ -65,7 +60,7 @@ const ArticlesList = React.createClass({
                 : <h2>No articles</h2>;
 
         return (
-            <div className={this.state.classes.join(' ')}>
+            <div className="rpc-articles-list"}>
                 { list }
             </div>
         );
@@ -105,20 +100,6 @@ const FilterByTitle = React.createClass({
     }
 });
 
-/**
- * Filter articles by simple title partial match checking. Also filter can be cleared.
- */
-const ContentToggler = React.createClass({
-    render() {
-        return (
-            <label className="rpc-filter-clear">
-                <input type="checkbox" onChange={this.props.toggleContent} />
-                <span>Toggle content</span>
-            </label>
-        );
-    }
-});
-
 const ArticlesBox = React.createClass({
     render() {
         return (
@@ -126,12 +107,8 @@ const ArticlesBox = React.createClass({
                 <h1>Articles</h1>
                 <div className="rpc-articles-settings">
                     <FilterByTitle articles={this.props.articles} filter={this.props.filter} clearFilter={this.props.clearFilter} />
-                    {/*
-                      TODO: not finished
-                      <ContentToggler toggleContent={this.props.toggleContent} />
-                    */}
                 </div>
-                <ArticlesList articles={this.props.articles} articlesListClasses={"TODO"} />
+                <ArticlesList articles={this.props.articles} />
                 <hr />
                 <h4>Some articles are sponsored by <a href='http://slipsum.com'>SAMUEL L. IPSUM</a></h4>
             </div>
@@ -188,7 +165,6 @@ const TopLevelBox = React.createClass({
                     articles: articles.concat([newArticle]),
                     articlesCache: articles.concat([newArticle])
                 }));
-                //this.setState({ articlesCache: articles.concat([newArticle]) });
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(this.props.url, status, err.toString());
@@ -213,17 +189,10 @@ const TopLevelBox = React.createClass({
      */
     clearTitleFilter(event) {
         const articles = this.state.articlesCache;
-        var toggle = event.target.value;
 
         this.setState((prevState) => ({
             articles: articles
         }));
-    },
-    /**
-     * TODO: Another convenience utility for easier scanning only article headers.
-     */
-    toggleContent(event) {
-        console.log("TODO: toggle change: ");
     },
     render() {
         // NOTE: removed width & height calculations,
