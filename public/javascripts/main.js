@@ -1,3 +1,7 @@
+// NOTE: currently it is advised to use ES6 classes as a replacement for older createClass.
+// Babel is used anyway so it would not be a problem. Set is as a TODO for future.
+// Also adding a build-step (Webpack) would be a good choice as app grows to split this file into smaller ones
+
 
 const NewArticleForm = React.createClass({
     getInitialState() {
@@ -20,10 +24,10 @@ const NewArticleForm = React.createClass({
     },
     render() {
         return (
-           <div>
-               <p>Title : <input type='text' value={this.state.title} onChange={this.handleTitleChange} /></p>
-               <p>Author : <input type='text' value={this.state.author} onChange={this.handleAuthorChange} /></p>
-               <p>Content : <textarea value={this.state.content} onChange={this.handleContentChange} /></p>
+           <div className="rpc-form">
+               <p><label>Title:</label> <input type='text' value={this.state.title} onChange={this.handleTitleChange} /></p>
+               <p><label>Author:</label> <input type='text' value={this.state.author} onChange={this.handleAuthorChange} /></p>
+               <p><label>Content:</label> <textarea value={this.state.content} onChange={this.handleContentChange} /></p>
                <button onClick={this.postNewArticle}>Publish</button>
            </div>
         );
@@ -33,7 +37,7 @@ const NewArticleForm = React.createClass({
 const Article = React.createClass({
     render() {
         return (
-           <div>
+           <div className="rpc-article">
                <h3>{this.props.title}</h3>
                <p>Author: {this.props.author}</p>
                <p>{this.props.content}</p>
@@ -56,8 +60,41 @@ const ArticlesList = React.createClass({
                 : <h2>No articles</h2>;
 
         return (
-            <div>
+            <div className="rpc-articles-list">
                 { list }
+            </div>
+        );
+    }
+});
+
+/**
+ * Filter articles by a simple title partial match checking. Also the filter can be cleared.
+ */
+const FilterByTitle = React.createClass({
+    getInitialState() {
+        return {filterText: ""}
+    },
+    clearValue(event) {
+        this.props.clearFilter(event);
+
+        this.setState((prevState) => ({
+            filterText: ""
+        }));
+    },
+    updateValue(event) {
+        var val = event.target.value;
+
+        this.props.filter(event);
+
+        this.setState((prevState) => ({
+            filterText: val
+        }));
+    },
+    render() {
+        return (
+            <div className="rpc-article-filter">
+                 <input type="text" placeholder="Filter by title" value={this.state.filterText} onChange={this.updateValue} />
+                 <button onClick={this.clearValue}>Clear</button>
             </div>
         );
     }
@@ -66,11 +103,14 @@ const ArticlesList = React.createClass({
 const ArticlesBox = React.createClass({
     render() {
         return (
-            <div className='split-left'>
-                <h1>Articles :</h1>
+            <div className='rpc-split-left'>
+                <h1>Articles</h1>
+                <div className="rpc-articles-settings">
+                    <FilterByTitle articles={this.props.articles} filter={this.props.filter} clearFilter={this.props.clearFilter} />
+                </div>
                 <ArticlesList articles={this.props.articles} />
                 <hr />
-                <h4>Articles are sponsored by <a href='http://slipsum.com'>SAMUEL L. IPSUM</a></h4>
+                <h4>Some articles are sponsored by <a href='http://slipsum.com'>SAMUEL L. IPSUM</a></h4>
             </div>
         );
     }
@@ -79,8 +119,8 @@ const ArticlesBox = React.createClass({
 const NewArticleBox = React.createClass({
     render() {
         return (
-            <div className='split-right'>
-                <h1>New article :</h1>
+            <div className='rpc-split-right'>
+                <h1>New article</h1>
                 <NewArticleForm postNewArticle={this.props.postNewArticle} />
             </div>
         );
@@ -92,7 +132,9 @@ const TopLevelBox = React.createClass({
         this.getArticlesFromBackend()
     },
     getInitialState() {
-        return { articles: [] };
+        // NOTE: added cache here to not make additional ajax call after filtering to rest articles list
+        // More sofisticated mechanism could be used here in real scale application
+        return { articles: [], articlesCache: [] };
     },
     getArticlesFromBackend() {
         $.ajax({
@@ -100,7 +142,10 @@ const TopLevelBox = React.createClass({
             dataType: 'json',
             type: 'GET',
             success: function(articles) {
-                this.setState({ articles });
+                this.setState((prevState) => ({
+                    articles: articles,
+                    articlesCache: articles
+                }));
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(this.props.url, status, err.toString());
@@ -115,22 +160,48 @@ const TopLevelBox = React.createClass({
             data: JSON.stringify(newArticle),
             success: function() {
                 successCallback();
-                const articles = this.state.articles;
-                this.setState({ articles: articles.concat([newArticle]) });
+                const articles = this.state.articlesCache;
+                this.setState((prevState) => ({
+                    articles: articles.concat([newArticle]),
+                    articlesCache: articles.concat([newArticle])
+                }));
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(this.props.url, status, err.toString());
             }.bind(this)
         });
     },
-    render() {
-        const height = $(window).height();
-        const width = $(window).width();
+    /**
+     * Simple partial match of title and typed phrase is used for filtering.
+     */
+    filterArticlesByTitle(event) {
+        const articles = this.state.articlesCache;
+        var title = event.target.value;
 
+        this.setState((prevState) => ({
+            articles: articles.filter((article) => {
+                return (article.title.indexOf(title) !== -1)
+            })
+        }));
+    },
+    /**
+     * Just for user convenience a helper to clear typed filter text.
+     */
+    clearTitleFilter(event) {
+        const articles = this.state.articlesCache;
+
+        this.setState((prevState) => ({
+            articles: articles
+        }));
+    },
+    render() {
+        // NOTE: removed width & height calculations,
+        // as it is not needed anymore,
+        // moved to CSS and added basic responsivness
         return (
-           <div style={{ height, width }}>
-               <ArticlesBox articles={this.state.articles} />
+           <div className="rpc-app">
                <NewArticleBox postNewArticle={this.postNewArticle} />
+               <ArticlesBox articles={this.state.articles} filter={this.filterArticlesByTitle} clearFilter={this.clearTitleFilter} />
            </div>
         );
     }

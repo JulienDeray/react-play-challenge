@@ -1,14 +1,158 @@
-/* Split page */
+/* Basic reset, font and layouting
+ * rpc- is a prefix to avoid potential collisions,
+ * as the app will grow and some external components could be used
+ *
+ * It is rather good idea to use LESS / SASS and split it for smaller parts / files in future.
+ */
 
-.split-left {
-    height: 100%;
-    overflow: auto;
-    float: left;
-    width: 70%;
+html, body, div, p {
+    margin: 0;
+    padding: 0;
 }
 
-.split-right {
-    float: right;
-    width: 30%;
+* {
+    box-sizing: border-box;
+	  font-family: Roboto, sans-serif;
+	  font-weight: 400;
+}
+
+html {
+    font-size: 1rem;
     height: 100%;
+    width: 100%;
+}
+
+
+
+/* Simple trick to force right column to have 100% height of all content
+ * without changing all HTML layout and going into absolutes or flexbox */
+.rpc-app {
+    display: table;
+    height: 100%;
+    width: 100%;
+}
+
+
+/* Split page */
+
+.rpc-split-left {
+      height: 100%;
+      float: left;
+      width: calc(100% - 25rem);
+      background: #f5f5f5;
+      padding: 1rem;
+}
+
+.rpc-articles-settings {
+    background: #ccc;
+}
+
+.rpc-article-filter {
+    padding: 0.5rem;
+    display: inline-block;
+}
+
+.rpc-article-filter input[type="text"] {
+    width: 300px;
+    display: inline-block;
+    border: 1px solid #333;
+    padding: 0.5rem;
+}
+
+.rpc-article-filter button {
+    color: #fff;
+    background: #333;
+    border: 1px solid #333;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.rpc-filter-clear {
+    margin-left: 1rem;
+}
+
+/* Article */
+.rpc-article {
+    margin-bottom: 3rem;
+}
+
+
+/* Show only titles */
+.rpc-only-titles {
+    margin-top: 1rem;
+}
+
+.rpc-only-titles .rpc-article {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background: #fff;
+}
+
+.rpc-only-titles h3 {
+    margin: 0;
+}
+
+.rpc-only-titles p {
+    display: none;
+}
+
+
+
+
+
+/*==== Adding articles ====*/
+
+.rpc-split-right {
+    float: right;
+    width: 25rem;
+    height: 100%;
+    background: #2a363e;
+    padding: 1rem;
+}
+
+.rpc-split-right h1 {
+    color: #fff;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #222;
+}
+
+.rpc-form label {
+    color: #fff;
+}
+
+.rpc-form input,
+.rpc-form textarea {
+    display: block;
+    width: 100%;
+    border: 1px solid #333;
+    padding: 0.5rem;
+}
+
+.rpc-form button {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #333;
+    cursor: pointer;
+    color: #fff;
+    background: #e25758;
+}
+
+
+
+
+
+
+
+/* Very basic responsivness support */
+@media screen and (max-width: 850px) {
+    .rpc-app {
+        display: block;
+    }
+
+    .rpc-split-right,
+    .rpc-split-left {
+        float: left;
+        width: 100%;
+    }
 }
