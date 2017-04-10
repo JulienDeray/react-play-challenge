@@ -24,13 +24,18 @@ html {
 
 
 
+/* Simple trick to force right column to have 100% height of all content
+ * without changing all HTML layout and going into absolutes or flexbox */
+.rpc-app {
+    display: table;
+    height: 100%;
+}
 
 
 /* Split page */
 
 .rpc-split-left {
       height: 100%;
-      overflow: auto;
       float: left;
       width: calc(100% - 25rem);
       background: #f5f5f5;
@@ -120,6 +125,10 @@ html {
 
 /* Very basic responsivness support */
 @media screen and (max-width: 850px) {
+    .rpc-app {
+        display: block;
+    }
+
     .rpc-split-right,
     .rpc-split-left {
         float: left;
