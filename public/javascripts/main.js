@@ -60,7 +60,7 @@ const ArticlesList = React.createClass({
                 : <h2>No articles</h2>;
 
         return (
-            <div className="rpc-articles-list"}>
+            <div className="rpc-articles-list">
                 { list }
             </div>
         );
