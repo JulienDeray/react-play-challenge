@@ -1,7 +1,7 @@
 
 const NewArticleForm = React.createClass({
     getInitialState() {
-        return { title: '', author: '', content: '',filter: '' };
+        return { title: '', author: '', content: '', };
     },
     handleTitleChange(event) {
         this.setState({ title: event.target.value });
@@ -32,10 +32,30 @@ const NewArticleForm = React.createClass({
 });
 
 const FilterForm = React.createClass({
+    getInitialState() {
+        return { filter: '' };
+    },
+
+    handleFilterChange(event) {
+        this.setState({ filter: event.target.value});
+    },
+
+    requestFilteredArticles(event) {
+        this.props.getFilteredArticlesFromBackend(
+            this.state,
+            () => this.setState( this.getInitialState() )
+        )
+    },
+
     render(){
         return (
             <div>
-                <p>Title : <input type='text' value={this.props.filter} onChange={this.props.handleFilterChange}/></p>
+                <p>Author :</p>
+                    <input type='text' value={this.state.filter}
+                    onChange={this.handleFilterChange}/>
+                    <button disabled={!this.state.filter}
+                        onClick={this.requestFilteredArticles}> Filter
+                    </button>
             </div>
         )
     }
@@ -103,7 +123,7 @@ const FilterBox = React.createClass ({
         return(
             <div>
                 <h1>Filter :</h1>
-                <FilterForm handleFilterChange={this.props.handleFilterChange}/>
+                <FilterForm getFilteredArticlesFromBackend={this.props.getFilteredArticlesFromBackend}/>
             </div>
         )
     }
@@ -118,9 +138,6 @@ const TopLevelBox = React.createClass({
         return { articles: [], filter: '' };
     },
 
-    handleFilterChange(event) {
-        this.setState({ filter: event.target.value });
-    },
     getAllArticlesFromBackend() {
         $.ajax({
             url: '/api/articles',
@@ -135,16 +152,16 @@ const TopLevelBox = React.createClass({
         });
     },
 
-    getFilteredArticlesFromBackend(){
+    getFilteredArticlesFromBackend(message){
         $.ajax({
-            url: '/api/artices',
-            dataType: 'JSON',
+            url: '/api/articles'+'?author='+message.filter,
+            dataType: 'json',
             type: 'GET',
-            successs: function(articles) {
-                this.setState({articles});
+            success: function(articles) {
+                this.setState({ articles });
             }.bind(this),
             error: function(xhr, status, err) {
-                console.error(this.props.url, status, err.toSting());
+                console.error(this.props.url, status, err.toString());
             }.bind(this)
         });
     },
@@ -172,7 +189,7 @@ const TopLevelBox = React.createClass({
         return (
            <div style={{ height, width }}>
                <ArticlesBox articles={this.state.articles} />
-               <FilterBox handleFilterChange={this.handleFilterChange}/>
+               <FilterBox getFilteredArticlesFromBackend={this.getFilteredArticlesFromBackend}/>
                <NewArticleBox postNewArticle={this.postNewArticle} />
            </div>
         );
