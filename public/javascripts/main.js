@@ -162,9 +162,9 @@ const TopLevelBox = React.createClass({
 
     getFilteredArticlesFromBackend(message){
         $.ajax({
-            url: '/api/articles'+'?title='+message.filter.title,
-            dataType: 'json',
+            url: '/api/articles',
             type: 'GET',
+            data: message.filter,
             success: function(articles) {
                 this.setState({ articles });
             }.bind(this),
