@@ -87,14 +87,15 @@ const NewArticleBox = React.createClass({
     }
 });
 
+
 const TopLevelBox = React.createClass({
     componentDidMount() {
-        this.getArticlesFromBackend()
+        this.getAllArticlesFromBackend()
     },
     getInitialState() {
         return { articles: [] };
     },
-    getArticlesFromBackend() {
+    getAllArticlesFromBackend() {
         $.ajax({
             url: '/api/articles',
             dataType: 'json',
