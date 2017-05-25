@@ -1,6 +1,8 @@
 package controllers
 
 import javax.inject._
+import scala.util.matching.Regex
+
 
 import articles.{Article, Articles}
 import articles.Articles.{articleFormatter, newArticleForm}
@@ -20,9 +22,9 @@ class ArticlesController @Inject() extends Controller {
     val optTitle = request.getQueryString("title")
 
     val filteredArticles = Articles.getArticles
-      .filter( article => optAuthor.fold(true)(author => author == article.author))
-      .filter( article => optContent.fold(true)(content => content == article.author))
-      .filter( article => optTitle.fold(true)(title => title == article.author))
+      .filter( article => optAuthor.fold(true)(author => article.author contains author))
+      .filter( article => optContent.fold(true)(content => article.content contains content))
+      .filter( article => optTitle.fold(true)(title => article.content contains title))
 
     Ok(Json.toJson(filteredArticles))
   }
@@ -37,4 +39,3 @@ class ArticlesController @Inject() extends Controller {
     )
   }
 }
-
