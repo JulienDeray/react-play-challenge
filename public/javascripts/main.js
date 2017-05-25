@@ -18,6 +18,7 @@ const NewArticleForm = React.createClass({
             () => this.setState( this.getInitialState() )
         )
     },
+
     render() {
         return (
            <div>
@@ -33,7 +34,9 @@ const NewArticleForm = React.createClass({
 const FilterForm = React.createClass({
     render(){
         return (
-            <div></div>
+            <div>
+                <p>Title : <input type='text' value={this.props.filter} onChange={this.props.handleFilterChange}/></p>
+            </div>
         )
     }
 });
@@ -100,7 +103,7 @@ const FilterBox = React.createClass ({
         return(
             <div>
                 <h1>Filter :</h1>
-                <FilterForm />
+                <FilterForm handleFilterChange={this.props.handleFilterChange}/>
             </div>
         )
     }
@@ -112,7 +115,11 @@ const TopLevelBox = React.createClass({
         this.getAllArticlesFromBackend()
     },
     getInitialState() {
-        return { articles: [] };
+        return { articles: [], filter: '' };
+    },
+
+    handleFilterChange(event) {
+        this.setState({ filter: event.target.value });
     },
     getAllArticlesFromBackend() {
         $.ajax({
@@ -165,7 +172,7 @@ const TopLevelBox = React.createClass({
         return (
            <div style={{ height, width }}>
                <ArticlesBox articles={this.state.articles} />
-               <FilterBox />
+               <FilterBox handleFilterChange={this.handleFilterChange}/>
                <NewArticleBox postNewArticle={this.postNewArticle} />
            </div>
         );
