@@ -1,7 +1,7 @@
 
 const NewArticleForm = React.createClass({
     getInitialState() {
-        return { title: '', author: '', content: '' };
+        return { title: '', author: '', content: '',filter: '' };
     },
     handleTitleChange(event) {
         this.setState({ title: event.target.value });
@@ -27,6 +27,14 @@ const NewArticleForm = React.createClass({
                <button onClick={this.postNewArticle}>Publish</button>
            </div>
         );
+    }
+});
+
+const FilterForm = React.createClass({
+    render(){
+        return (
+            <div></div>
+        )
     }
 });
 
@@ -87,6 +95,17 @@ const NewArticleBox = React.createClass({
     }
 });
 
+const FilterBox = React.createClass ({
+    render(){
+        return(
+            <div>
+                <h1>Filter :</h1>
+                <FilterForm />
+            </div>
+        )
+    }
+});
+
 
 const TopLevelBox = React.createClass({
     componentDidMount() {
@@ -108,6 +127,21 @@ const TopLevelBox = React.createClass({
             }.bind(this)
         });
     },
+
+    getFilteredArticlesFromBackend(){
+        $.ajax({
+            url: '/api/artices',
+            dataType: 'JSON',
+            type: 'GET',
+            successs: function(articles) {
+                this.setState({articles});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toSting());
+            }.bind(this)
+        });
+    },
+
     postNewArticle(newArticle, successCallback) {
         $.ajax({
             url: '/api/articles/new',
@@ -131,6 +165,7 @@ const TopLevelBox = React.createClass({
         return (
            <div style={{ height, width }}>
                <ArticlesBox articles={this.state.articles} />
+               <FilterBox />
                <NewArticleBox postNewArticle={this.postNewArticle} />
            </div>
         );
