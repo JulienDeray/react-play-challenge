@@ -33,11 +33,11 @@ const NewArticleForm = React.createClass({
 
 const FilterForm = React.createClass({
     getInitialState() {
-        return { filter: { author: '' }};
+        return { filter: { title: '' }};
     },
 
     handleFilterChange(event) {
-        this.setState({ filter: { author: event.target.value}});
+        this.setState({ filter: { title: event.target.value}});
     },
 
     requestFilteredArticles(event) {
@@ -50,10 +50,10 @@ const FilterForm = React.createClass({
     render(){
         return (
             <div>
-                <p>Author :</p>
-                    <input type='text' value={this.state.filter.author}
+                <p>Title :</p>
+                    <input type='text' value={this.state.filter.title}
                     onChange={this.handleFilterChange}/>
-                    <button 
+                    <button
                         onClick={this.requestFilteredArticles}> Filter
                     </button>
             </div>
@@ -154,7 +154,7 @@ const TopLevelBox = React.createClass({
 
     getFilteredArticlesFromBackend(message){
         $.ajax({
-            url: '/api/articles'+'?author='+message.filter.author,
+            url: '/api/articles'+'?title='+message.filter.title,
             dataType: 'json',
             type: 'GET',
             success: function(articles) {
