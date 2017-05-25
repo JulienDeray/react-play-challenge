@@ -33,11 +33,13 @@ const NewArticleForm = React.createClass({
 
 const FilterForm = React.createClass({
     getInitialState() {
-        return { filter: { title: '' }};
+        return { filter: {  title: '', author: '', content: '',  }};
     },
 
-    handleFilterChange(event) {
-        this.setState({ filter: { title: event.target.value}});
+    handleFilterChange(name, event) {
+        var filter = {  title: this.state.filter.title, author: this.state.filter.author, content: this.state.filter.content  };
+        filter[name] = event.target.value;
+        this.setState({ filter });
     },
 
     requestFilteredArticles(event) {
@@ -52,10 +54,16 @@ const FilterForm = React.createClass({
             <div>
                 <p>Title :</p>
                     <input type='text' value={this.state.filter.title}
-                    onChange={this.handleFilterChange}/>
-                    <button
-                        onClick={this.requestFilteredArticles}> Filter
-                    </button>
+                    onChange={this.handleFilterChange.bind(this, 'title')}/>
+                <p>Author :</p>
+                    <input type='text' value={this.state.filter.author}
+                    onChange={this.handleFilterChange.bind(this, 'author')}/>
+                <p>Content :</p>
+                    <input type='text' value={this.state.filter.content}
+                    onChange={this.handleFilterChange.bind(this, 'content')}/>
+                <button
+                    onClick={this.requestFilteredArticles}> Filter
+                </button>
             </div>
         )
     }
