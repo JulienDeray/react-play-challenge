@@ -1,8 +1,6 @@
 package controllers
 
 import javax.inject._
-import scala.util.matching.Regex
-
 
 import articles.{Article, Articles}
 import articles.Articles.{articleFormatter, newArticleForm}
