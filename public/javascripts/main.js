@@ -86,14 +86,14 @@ const ArticlesList = React.createClass({
     render() {
         const list =
             this.props.articles.length
-                ? this.props.articles.map(article =>
+                ? this.props.articles.map((article, index) =>
                     <Article
-                        key={article.title}
+                        key={index}
                         title={article.title}
                         author={article.author}
                         content={article.content} />
                 )
-                : <h2>No articles</h2>;
+                : <h2>No articles found</h2>;
 
         return (
             <div>
