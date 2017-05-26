@@ -187,6 +187,7 @@ const TopLevelBox = React.createClass({
                 this.setState({ articles: articles.concat([newArticle]) });
             }.bind(this),
             error: function(xhr, status, err) {
+                alert('Please fill in all fields')
                 console.error(this.props.url, status, err.toString());
             }.bind(this)
         });
