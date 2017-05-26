@@ -109,8 +109,6 @@ const ArticlesBox = React.createClass({
             <div className='split-left'>
                 <h1>Articles :</h1>
                 <ArticlesList articles={this.props.articles} />
-                <hr />
-                <h4>Articles are sponsored by <a href='http://slipsum.com'>SAMUEL L. IPSUM</a></h4>
             </div>
         );
     }
@@ -119,7 +117,7 @@ const ArticlesBox = React.createClass({
 const NewArticleBox = React.createClass({
     render() {
         return (
-            <div className='split-right'>
+            <div>
                 <h1>New article :</h1>
                 <NewArticleForm postNewArticle={this.props.postNewArticle} />
             </div>
@@ -197,11 +195,15 @@ const TopLevelBox = React.createClass({
         const width = $(window).width();
 
         return (
-           <div style={{ height, width }}>
-               <ArticlesBox articles={this.state.articles} />
-               <FilterBox getFilteredArticlesFromBackend={this.getFilteredArticlesFromBackend}/>
-               <NewArticleBox postNewArticle={this.postNewArticle} />
-           </div>
+            <div style={{ height, width }}>
+                <ArticlesBox articles={this.state.articles} />
+                <div className='split-right'>
+                    <FilterBox getFilteredArticlesFromBackend={this.getFilteredArticlesFromBackend}/>
+                    <NewArticleBox postNewArticle={this.postNewArticle} />
+                    <hr />
+                    <h4>Articles are sponsored by <a href='http://slipsum.com'>SAMUEL L. IPSUM</a></h4>
+                </div>
+            </div>
         );
     }
 });
