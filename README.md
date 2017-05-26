@@ -22,18 +22,18 @@ When a new article is published, `TopLevelBox` sends the data to the server (`PO
 ## The exercise
 
 1) If our application is successful, the number of articles will be too huge so that the user will probably want to filter them. 
-It is your turn to figure out a way to filter the articles, by title first. You can add my features if you think it could improve the efficiency or the UX, be creative! 
+It is your turn to figure out a way to filter the articles, by title first. You can add more features if you think it could improve the efficiency or the UX, be creative! 
 
 2) Improve whatever you want, any good idea can improve the user's experience ;)
 
-Don't overdo it, just think about what you would do if you were in this case working at moBillity. Keep it simple but answer the need of the user.
+Don't overdo it, just think about what you would do if you were in this case working at Mobillity. Keep it simple but answer the need of the user.
 
 Fork the repository and send a pull request when you are done.
  
 ## Why this exercise ?
 
 This exercise should not take more than 24h, you will probably have to learn a lot though. 
-None of the developers at moBillity knew neither React.js nor Play! nor Scala when they arrived.
+None of the developers at Mobillity knew neither React.js nor Play! nor Scala when they arrived.
 However, after a couple of weeks they were already very efficient. 
 We set up this challenge not to test your level on these languages but to test your level at learning.
    
