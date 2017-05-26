@@ -39,7 +39,8 @@ const FilterForm = React.createClass({
     handleFilterChange(name, event) {
         const filter = {  title: this.state.filter.title, author: this.state.filter.author, content: this.state.filter.content  };
         filter[name] = event.target.value;
-        this.setState({ filter });
+        this.setState({ filter },this.requestFilteredArticles);
+
     },
 
     resetFilter() {
@@ -63,9 +64,7 @@ const FilterForm = React.createClass({
                     onChange={this.handleFilterChange.bind(this, 'author')}/></p>
                 <p>Content : <input type='text' value={this.state.filter.content}
                     onChange={this.handleFilterChange.bind(this, 'content')}/></p>
-                <button onClick={this.requestFilteredArticles}> Filter </button>
                 <button onClick={this.resetFilter}> Reset filter </button>
-
             </div>
         )
     }
