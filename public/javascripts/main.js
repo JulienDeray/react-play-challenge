@@ -37,12 +37,17 @@ const FilterForm = React.createClass({
     },
 
     handleFilterChange(name, event) {
-        var filter = {  title: this.state.filter.title, author: this.state.filter.author, content: this.state.filter.content  };
+        const filter = {  title: this.state.filter.title, author: this.state.filter.author, content: this.state.filter.content  };
         filter[name] = event.target.value;
         this.setState({ filter });
     },
 
-    requestFilteredArticles(event) {
+    resetFilter() {
+        const filter = {  title: '', author: '', content: ''  };
+        this.setState({ filter },this.requestFilteredArticles);
+    },
+
+    requestFilteredArticles() {
         this.props.getFilteredArticlesFromBackend(
             this.state,
             () => this.setState( this.getInitialState() )
@@ -52,18 +57,15 @@ const FilterForm = React.createClass({
     render(){
         return (
             <div>
-                <p>Title :</p>
-                    <input type='text' value={this.state.filter.title}
-                    onChange={this.handleFilterChange.bind(this, 'title')}/>
-                <p>Author :</p>
-                    <input type='text' value={this.state.filter.author}
-                    onChange={this.handleFilterChange.bind(this, 'author')}/>
-                <p>Content :</p>
-                    <input type='text' value={this.state.filter.content}
-                    onChange={this.handleFilterChange.bind(this, 'content')}/>
-                <button
-                    onClick={this.requestFilteredArticles}> Filter
-                </button>
+                <p>Title : <input ref='title' type='text' value={this.state.filter.title}
+                    onChange={this.handleFilterChange.bind(this, 'title')}/></p>
+                <p>Author : <input type='text' value={this.state.filter.author}
+                    onChange={this.handleFilterChange.bind(this, 'author')}/></p>
+                <p>Content : <input type='text' value={this.state.filter.content}
+                    onChange={this.handleFilterChange.bind(this, 'content')}/></p>
+                <button onClick={this.requestFilteredArticles}> Filter </button>
+                <button onClick={this.resetFilter}> Reset filter </button>
+
             </div>
         )
     }
