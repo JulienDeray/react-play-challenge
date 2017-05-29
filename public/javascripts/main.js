@@ -1,7 +1,7 @@
 
 const NewArticleForm = React.createClass({
     getInitialState() {
-        return { title: '', author: '', content: '' };
+        return { title: '', author: '', content: '', };
     },
     handleTitleChange(event) {
         this.setState({ title: event.target.value });
@@ -18,6 +18,7 @@ const NewArticleForm = React.createClass({
             () => this.setState( this.getInitialState() )
         )
     },
+
     render() {
         return (
            <div>
@@ -27,6 +28,45 @@ const NewArticleForm = React.createClass({
                <button onClick={this.postNewArticle}>Publish</button>
            </div>
         );
+    }
+});
+
+const FilterForm = React.createClass({
+    getInitialState() {
+        return { filter: {  title: '', author: '', content: '',  }};
+    },
+
+    handleFilterChange(name, event) {
+        const filter = {  title: this.state.filter.title, author: this.state.filter.author, content: this.state.filter.content  };
+        filter[name] = event.target.value;
+        this.setState({ filter },this.requestFilteredArticles);
+
+    },
+
+    resetFilter() {
+        const filter = {  title: '', author: '', content: ''  };
+        this.setState({ filter },this.requestFilteredArticles);
+    },
+
+    requestFilteredArticles() {
+        this.props.getFilteredArticlesFromBackend(
+            this.state,
+            () => this.setState( this.getInitialState() )
+        )
+    },
+
+    render(){
+        return (
+            <div>
+                <p>Title : <input ref='title' type='text' value={this.state.filter.title}
+                    onChange={this.handleFilterChange.bind(this, 'title')}/></p>
+                <p>Author : <input type='text' value={this.state.filter.author}
+                    onChange={this.handleFilterChange.bind(this, 'author')}/></p>
+                <p>Content : <input type='text' value={this.state.filter.content}
+                    onChange={this.handleFilterChange.bind(this, 'content')}/></p>
+                <button onClick={this.resetFilter}> Reset filter </button>
+            </div>
+        )
     }
 });
 
@@ -46,14 +86,14 @@ const ArticlesList = React.createClass({
     render() {
         const list =
             this.props.articles.length
-                ? this.props.articles.map(article =>
+                ? this.props.articles.map((article, index) =>
                     <Article
-                        key={article.title}
+                        key={index}
                         title={article.title}
                         author={article.author}
                         content={article.content} />
                 )
-                : <h2>No articles</h2>;
+                : <h2>No articles found</h2>;
 
         return (
             <div>
@@ -69,8 +109,6 @@ const ArticlesBox = React.createClass({
             <div className='split-left'>
                 <h1>Articles :</h1>
                 <ArticlesList articles={this.props.articles} />
-                <hr />
-                <h4>Articles are sponsored by <a href='http://slipsum.com'>SAMUEL L. IPSUM</a></h4>
             </div>
         );
     }
@@ -79,7 +117,7 @@ const ArticlesBox = React.createClass({
 const NewArticleBox = React.createClass({
     render() {
         return (
-            <div className='split-right'>
+            <div>
                 <h1>New article :</h1>
                 <NewArticleForm postNewArticle={this.props.postNewArticle} />
             </div>
@@ -87,14 +125,27 @@ const NewArticleBox = React.createClass({
     }
 });
 
+const FilterBox = React.createClass ({
+    render(){
+        return(
+            <div>
+                <h1>Filter :</h1>
+                <FilterForm getFilteredArticlesFromBackend={this.props.getFilteredArticlesFromBackend}/>
+            </div>
+        )
+    }
+});
+
+
 const TopLevelBox = React.createClass({
     componentDidMount() {
-        this.getArticlesFromBackend()
+        this.getAllArticlesFromBackend()
     },
     getInitialState() {
-        return { articles: [] };
+        return { articles: []};
     },
-    getArticlesFromBackend() {
+
+    getAllArticlesFromBackend() {
         $.ajax({
             url: '/api/articles',
             dataType: 'json',
@@ -107,6 +158,21 @@ const TopLevelBox = React.createClass({
             }.bind(this)
         });
     },
+
+    getFilteredArticlesFromBackend(message){
+        $.ajax({
+            url: '/api/articles',
+            type: 'GET',
+            data: message.filter,
+            success: function(articles) {
+                this.setState({ articles });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
+
     postNewArticle(newArticle, successCallback) {
         $.ajax({
             url: '/api/articles/new',
@@ -119,6 +185,7 @@ const TopLevelBox = React.createClass({
                 this.setState({ articles: articles.concat([newArticle]) });
             }.bind(this),
             error: function(xhr, status, err) {
+                alert('Please fill in all fields')
                 console.error(this.props.url, status, err.toString());
             }.bind(this)
         });
@@ -128,10 +195,15 @@ const TopLevelBox = React.createClass({
         const width = $(window).width();
 
         return (
-           <div style={{ height, width }}>
-               <ArticlesBox articles={this.state.articles} />
-               <NewArticleBox postNewArticle={this.postNewArticle} />
-           </div>
+            <div style={{ height, width }}>
+                <ArticlesBox articles={this.state.articles} />
+                <div className='split-right'>
+                    <FilterBox getFilteredArticlesFromBackend={this.getFilteredArticlesFromBackend}/>
+                    <NewArticleBox postNewArticle={this.postNewArticle} />
+                    <hr />
+                    <h4>Articles are sponsored by <a href='http://slipsum.com'>SAMUEL L. IPSUM</a></h4>
+                </div>
+            </div>
         );
     }
 });

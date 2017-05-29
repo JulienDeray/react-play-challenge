@@ -1,14 +1,17 @@
 /* Split page */
 
 .split-left {
-    height: 100%;
-    overflow: auto;
+    height: 100vh;
     float: left;
-    width: 70%;
+    width: 67vw;
 }
 
 .split-right {
+    border-left: 1px solid;
+    position: fixed;
     float: right;
-    width: 30%;
-    height: 100%;
+    right: 0;
+    width: 30vw;
+    height: 100vh;
+    padding: 10px;
 }

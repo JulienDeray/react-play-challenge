@@ -20,9 +20,9 @@ class ArticlesController @Inject() extends Controller {
     val optTitle = request.getQueryString("title")
 
     val filteredArticles = Articles.getArticles
-      .filter( article => optAuthor.fold(true)(author => author == article.author))
-      .filter( article => optContent.fold(true)(content => content == article.author))
-      .filter( article => optTitle.fold(true)(title => title == article.author))
+      .filter( article => optAuthor.fold(true)(author => article.author.toLowerCase contains author.toLowerCase))
+      .filter( article => optContent.fold(true)(content => article.content.toLowerCase contains content.toLowerCase))
+      .filter( article => optTitle.fold(true)(title => article.title.toLowerCase contains title.toLowerCase))
 
     Ok(Json.toJson(filteredArticles))
   }
@@ -37,4 +37,3 @@ class ArticlesController @Inject() extends Controller {
     )
   }
 }
-
