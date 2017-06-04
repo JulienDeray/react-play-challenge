@@ -5,6 +5,7 @@
 GET     /                           controllers.ArticlesController.index
 
 GET     /api/articles               controllers.ArticlesController.getArticles
+GET     /api/articles/search        controllers.ArticlesController.getSearchedArticles
 POST    /api/articles/new           controllers.ArticlesController.newArticle
 
 # Map static resources from the /public folder to the /assets URL path
