@@ -1,7 +1,7 @@
 
 const NewArticleForm = React.createClass({
     getInitialState() {
-        return { title: '', author: '', content: '' };
+        return { title: '', author: '', content: '' , category : '' };
     },
     handleTitleChange(event) {
         this.setState({ title: event.target.value });
@@ -12,6 +12,9 @@ const NewArticleForm = React.createClass({
     handleContentChange(event) {
         this.setState({ content: event.target.value });
     },
+    handleCategoryChange(event) {
+        this.setState({ category: event.target.value });
+    },
     postNewArticle() {
         this.props.postNewArticle(
             this.state,
@@ -20,23 +23,80 @@ const NewArticleForm = React.createClass({
     },
     render() {
         return (
-           <div>
-               <p>Title : <input type='text' value={this.state.title} onChange={this.handleTitleChange} /></p>
-               <p>Author : <input type='text' value={this.state.author} onChange={this.handleAuthorChange} /></p>
-               <p>Content : <textarea value={this.state.content} onChange={this.handleContentChange} /></p>
-               <button onClick={this.postNewArticle}>Publish</button>
-           </div>
+               <div className="form">
+                   <p><label>Title : <input className="form-control" type='text' value={this.state.title} onChange={this.handleTitleChange} /></label></p>
+                   <p><label>Author : <input className="form-control" type='text' value={this.state.author} onChange={this.handleAuthorChange} /></label></p>
+                   <p><label>Category : <input className="form-control" type='text' value={this.state.category} onChange={this.handleCategoryChange} /></label></p>
+                   <p><label>Content : <textarea className="form-control" value={this.state.content} onChange={this.handleContentChange} /></label></p>
+                   <button className="btn btn-primary" onClick={this.postNewArticle}>Publish</button>
+               </div>
         );
     }
 });
+
+const SearchArticleForm = React.createClass({
+
+    getInitialState() {
+            return { title: '', author: '', content: '' , category : '' };
+        },
+    handleTitleChange(event) {
+        this.setState({ title: event.target.value });
+    },
+    handleAuthorChange(event) {
+        this.setState({ author: event.target.value });
+    },
+    handleCategoryChange(event) {
+        this.setState({ category: event.target.value });
+    },
+    getSearchArticle() {
+        this.props.getSearchArticle(
+            this.state,
+            () => this.setState( this.getInitialState() )
+        )
+    },
+    resetSearchArticle() {
+              this.props.resetSearchArticle(
+                  this.state,
+                  () => this.setState( this.getInitialState() )
+              )
+    },
+    render() {
+       return (
+            <div className="form">
+                <p><label>Title : <input className="form-control" type='text' value={this.state.title} onChange={this.handleTitleChange} /></label></p>
+                <p><label>Author : <input className="form-control" type='text' value={this.state.author} onChange={this.handleAuthorChange} /></label></p>
+                <p><label>Category : <input className="form-control" type='text' value={this.state.category} onChange={this.handleCategoryChange} /></label></p>
+                <button className="btn btn-primary" onClick={this.getSearchArticle}>Search</button>
+                <button className="btn btn-danger" onClick={this.resetSearchArticle}>Reset</button>
+            </div>
+       );
+    }
+})
 
 const Article = React.createClass({
     render() {
         return (
            <div>
-               <h3>{this.props.title}</h3>
-               <p>Author: {this.props.author}</p>
-               <p>{this.props.content}</p>
+                <table className="table table-striped">
+                    <tbody>
+                        <tr>
+                            <td>Title</td>
+                            <td>{this.props.title}</td>
+                        </tr>
+                        <tr>
+                            <td>Author</td>
+                            <td>{this.props.author}</td>
+                        </tr>
+                        <tr>
+                            <td>Category</td>
+                            <td>{this.props.category}</td>
+                        </tr>
+                        <tr>
+                            <td>Content</td>
+                            <td>{this.props.content}</td>
+                        </tr>
+                    </tbody>
+                </table>
            </div>
         );
     }
@@ -51,6 +111,7 @@ const ArticlesList = React.createClass({
                         key={article.title}
                         title={article.title}
                         author={article.author}
+                        category={article.category}
                         content={article.content} />
                 )
                 : <h2>No articles</h2>;
@@ -64,9 +125,20 @@ const ArticlesList = React.createClass({
 });
 
 const ArticlesBox = React.createClass({
+
+    resetPage() {
+        this.props.page = 0;
+    },
+    componentDidMount() {
+        window.addEventListener('scroll', this.handleScroll);
+    },
+    handleScroll(event) {
+        this.props.pageIncrement(this.props.limit)
+        this.props.getArticlesFromBackend(this.props.limit,this.props.getPagePosition())
+    },
     render() {
         return (
-            <div className='split-left'>
+            <div className='col-md-9'>
                 <h1>Articles :</h1>
                 <ArticlesList articles={this.props.articles} />
                 <hr />
@@ -79,26 +151,44 @@ const ArticlesBox = React.createClass({
 const NewArticleBox = React.createClass({
     render() {
         return (
-            <div className='split-right'>
-                <h1>New article :</h1>
+            <div className="col-md-12">
+                <h4>New article :</h4>
                 <NewArticleForm postNewArticle={this.props.postNewArticle} />
             </div>
         );
     }
 });
 
+const SearchArticleBox = React.createClass({
+    render() {
+        return (
+            <div className="col-md-12">
+                <h4>Search article :</h4>
+                <SearchArticleForm getSearchArticle={this.props.getSearchArticle} resetSearchArticle={this.props.resetSearchArticle} />
+            </div>
+        );
+    }
+});
+
 const TopLevelBox = React.createClass({
+
+    page : 0,
+    limit: 5,
     componentDidMount() {
-        this.getArticlesFromBackend()
+        this.getArticlesFromBackend(5,0)
     },
     getInitialState() {
         return { articles: [] };
     },
-    getArticlesFromBackend() {
+    getResetArticlesFromBackend(size, page) {
         $.ajax({
             url: '/api/articles',
             dataType: 'json',
             type: 'GET',
+            data: {
+                size : size,
+                page : page
+            },
             success: function(articles) {
                 this.setState({ articles });
             }.bind(this),
@@ -106,6 +196,46 @@ const TopLevelBox = React.createClass({
                 console.error(this.props.url, status, err.toString());
             }.bind(this)
         });
+    },
+    getArticlesFromBackend(size, page) {
+        $.ajax({
+            url: '/api/articles',
+            dataType: 'json',
+            type: 'GET',
+            data: {
+                size : size,
+                page : page
+            },
+            success: function(articles) {
+                this.setState({ articles : this.state.articles.concat(articles) });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
+    getSearchArticle(searchArticle, successCallback) {
+            $.ajax({
+                url: '/api/articles/search',
+                dataType: 'json',
+                type: 'GET',
+                data: searchArticle,
+                success: function(articles) {
+                    this.setState({ articles });
+                }.bind(this),
+                error: function(xhr, status, err) {
+                    console.error(this.props.url, status, err.toString());
+                }.bind(this)
+            });
+    },
+    resetSearchArticle() {
+        this.getResetArticlesFromBackend(5,0)
+    },
+    pageIncrement(inc){
+        this.page += inc;
+    },
+    getPagePosition(){
+        return this.page;
     },
     postNewArticle(newArticle, successCallback) {
         $.ajax({
@@ -128,9 +258,16 @@ const TopLevelBox = React.createClass({
         const width = $(window).width();
 
         return (
-           <div style={{ height, width }}>
-               <ArticlesBox articles={this.state.articles} />
-               <NewArticleBox postNewArticle={this.postNewArticle} />
+           <div className="container">
+                <div className="row">
+                   <ArticlesBox articles={this.state.articles} getArticlesFromBackend={this.getArticlesFromBackend} page={this.page} limit={this.limit} pageIncrement={this.pageIncrement} getPagePosition={this.getPagePosition} />
+                   <div className="col-md-3">
+                      <div className="row">
+                        <NewArticleBox postNewArticle={this.postNewArticle} />
+                        <SearchArticleBox getSearchArticle={this.getSearchArticle} resetSearchArticle={this.resetSearchArticle} />
+                      </div>
+                   </div>
+                </div>
            </div>
         );
     }
